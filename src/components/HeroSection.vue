@@ -1,6 +1,6 @@
 <template>
   <section class="hero-section">
-    <Carousel :items-to-show="1">
+    <Carousel :items-to-show="1" :wrap-around="true" :autoplay="6000">
       <Slide v-for="slide in 3" :key="slide">
         <div
           class="single-hero-items set-bg"
@@ -25,7 +25,6 @@
 
       <template #addons>
         <navigation />
-        <pagination />
       </template>
     </Carousel>
   </section>
