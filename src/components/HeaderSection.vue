@@ -13,9 +13,9 @@
         <div class="row">
           <div class="col-lg-2 col-md-2">
             <div class="logo">
-              <a href="#">
+              <RouterLink to="/">
                 <img src="@/assets/img/logo_website_shayna.png" alt="" />
-              </a>
+              </RouterLink>
             </div>
           </div>
           <div class="col-lg-7 col-md-7"></div>
