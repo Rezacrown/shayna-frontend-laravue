@@ -2,21 +2,36 @@
 import 'vue3-carousel/dist/carousel.css'
 import { Carousel, Slide, Navigation } from 'vue3-carousel'
 
-import { RouterLink } from 'vue-router'
-import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { onMounted, ref } from 'vue'
 
-const dataImages = [
-  'http://localhost:3000/src/assets/img/mickey1.jpg',
-  'http://localhost:3000/src/assets/img/mickey2.jpg',
-  'http://localhost:3000/src/assets/img/mickey3.jpg',
-  'http://localhost:3000/src/assets/img/mickey4.jpg'
-]
+import { config } from '../config'
+import { fetching } from '../config/axios'
+import { ProductAPIResponseByID, ProductAPI } from '../types/ProductAPI'
 
-const bigImage = ref<string>(dataImages[0])
+const router = useRoute()
+
+const emit = defineEmits(['handleAddCart'])
+
+const dataImages = ref<any[]>()
+const bigImage = ref<string>()
+
+const product = ref<ProductAPI>()
 
 const handleChangeImage = (url: string) => {
   bigImage.value = url
 }
+
+onMounted(async () => {
+  const id = router.params.id
+  const res = (await fetching.get(`/products?id=${id}`)) as ProductAPIResponseByID
+
+  // console.log(res.data.data[0].images[0])
+  bigImage.value = res.data.data[0].images[0].photo
+  dataImages.value = res.data.data[0].images
+
+  product.value = res.data.data[0]
+})
 </script>
 
 <template>
@@ -28,18 +43,22 @@ const handleChangeImage = (url: string) => {
             <div class="col-lg-6">
               <!-- big image -->
               <div class="product-pic-zoom">
-                <img class="product-big-img" :src="bigImage" alt="" />
+                <img
+                  class="product-big-img"
+                  :src="`${config.baseUrl}/storage/${bigImage}`"
+                  alt=""
+                />
               </div>
               <div class="product-thumbs">
                 <!-- caraousel image -->
                 <Carousel class="product-thumbs-track ps-slider" :items-to-show="3">
-                  <Slide v-for="(slide, idx) in dataImages" :key="idx">
+                  <Slide v-for="(item, idx) in dataImages" :key="idx">
                     <div
                       class="pt item"
-                      :class="slide == bigImage && 'active'"
-                      @click="() => handleChangeImage(slide)"
+                      :class="item.photo == bigImage && 'active'"
+                      @click="() => handleChangeImage(item.photo)"
                     >
-                      <img :src="slide" alt="" />
+                      <img :src="`${config.baseUrl}/storage/${item.photo}`" alt="" />
                     </div>
                   </Slide>
 
@@ -51,32 +70,31 @@ const handleChangeImage = (url: string) => {
             <div class="col-lg-6">
               <div class="product-details">
                 <div class="pd-title">
-                  <span>oranges</span>
-                  <h3>Pure Pineapple</h3>
+                  <span>{{ product?.type }}</span>
+                  <h3>{{ product?.name }}</h3>
                 </div>
                 <div class="pd-desc">
                   <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis, error
-                    officia. Rem aperiam laborum voluptatum vel, pariatur modi hic provident eum
-                    iure natus quos non a sequi, id accusantium! Autem.
+                    {{ product?.description }}
                   </p>
-                  <p>
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quam possimus quisquam
-                    animi, commodi, nihil voluptate nostrum neque architecto illo officiis
-                    doloremque et corrupti cupiditate voluptatibus error illum. Commodi expedita
-                    animi nulla aspernatur. Id asperiores blanditiis, omnis repudiandae iste
-                    inventore cum, quam sint molestiae accusamus voluptates ex tempora illum sit
-                    perspiciatis. Nostrum dolor tenetur amet, illo natus magni veniam quia sit nihil
-                    dolores. Commodi ratione distinctio harum voluptatum velit facilis voluptas
-                    animi non laudantium, id dolorem atque perferendis enim ducimus? A
-                    exercitationem recusandae aliquam quod. Itaque inventore obcaecati, unde quam
-                    impedit praesentium veritatis quis beatae ea atque perferendis voluptates velit
-                    architecto?
-                  </p>
-                  <h4>$495.00</h4>
+                  <h4>${{ product?.price }}</h4>
                 </div>
                 <div class="quantity">
-                  <RouterLink to="/cart" class="primary-btn pd-cart">Add To Cart</RouterLink>
+                  <a
+                    @click="
+                      () =>
+                        emit(
+                          'handleAddCart',
+                          product?.id,
+                          product?.name,
+                          product?.price,
+                          product?.images[0].photo
+                        )
+                    "
+                    href="#"
+                    class="primary-btn pd-cart"
+                    >Add To Cart</a
+                  >
                 </div>
               </div>
             </div>

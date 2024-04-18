@@ -1,3 +1,35 @@
+<script setup lang="ts">
+import { ProductAPI } from '../types/ProductAPI'
+
+import { config } from '../config'
+import { onMounted, ref } from 'vue'
+
+const cartNotif = ref<number | null>(null)
+const products = ref<{ id: number; name: string; price: number; photo: string }[]>([])
+const totalHarga = ref<number>(0)
+
+onMounted(() => {
+  const data = localStorage.getItem('cart-products')
+    ? (JSON.parse(localStorage.getItem('cart-products')!) as ProductAPI[])
+    : null
+
+  if (data) {
+    cartNotif.value = data.length
+    products.value = data as any
+    // console.log(products.value)
+    data.forEach((item) => {
+      totalHarga.value += item.price
+    })
+  }
+})
+
+const handleDeleteCart = async (index: number) => {
+  const data = products.value.filter((_, idx) => idx != index)
+  localStorage.setItem('cart-products', JSON.stringify(data))
+  window.location.reload()
+}
+</script>
+
 <template>
   <header class="header-section">
     <div class="header-top">
@@ -23,52 +55,45 @@
             <ul class="nav-right">
               <li class="cart-icon">
                 Keranjang Belanja &nbsp;
-                <a href="#">
+                <a href="#" v-if="cartNotif">
                   <i class="icon_bag_alt"></i>
-                  <span>3</span>
+                  <span>{{ cartNotif }}</span>
                 </a>
                 <div class="cart-hover">
                   <div class="select-items">
                     <table>
-                      <tbody>
-                        <tr>
-                          <td class="si-pic">
-                            <img src="@/assets/img/select-product-1.jpg" alt="" />
-                          </td>
-                          <td class="si-text">
-                            <div class="product-selected">
-                              <p>$60.00 x 1</p>
-                              <h6>Kabino Bedside Table</h6>
-                            </div>
-                          </td>
-                          <td class="si-close">
-                            <i class="ti-close"></i>
-                          </td>
+                      <tbody v-if="products?.length">
+                        <!--  -->
+                        <tr v-for="(item, idx) in products" :key="idx">
+                          <template v-if="idx < 3">
+                            <td class="si-pic">
+                              <img :src="`${config.baseUrl}/storage/${item.photo}`" alt="" />
+                            </td>
+                            <td class="si-text">
+                              <div class="product-selected">
+                                <p>${{ item.price }} x 1</p>
+                                <h6>{{ item.name }}</h6>
+                              </div>
+                            </td>
+                            <td class="si-close">
+                              <i @click="() => handleDeleteCart(idx)" class="ti-close"></i>
+                            </td>
+                          </template>
                         </tr>
-                        <tr>
-                          <td class="si-pic">
-                            <img src="@/assets/img/select-product-2.jpg" alt="" />
-                          </td>
-                          <td class="si-text">
-                            <div class="product-selected">
-                              <p>$60.00 x 1</p>
-                              <h6>Kabino Bedside Table</h6>
-                            </div>
-                          </td>
-                          <td class="si-close">
-                            <i class="ti-close"></i>
-                          </td>
-                        </tr>
+                        <!--  -->
+                      </tbody>
+                      <tbody v-else>
+                        <td>Tidak Products</td>
                       </tbody>
                     </table>
                   </div>
                   <div class="select-total">
                     <span>total:</span>
-                    <h5>$120.00</h5>
+                    <h5>${{ totalHarga.toFixed(2) }}</h5>
                   </div>
                   <div class="select-button">
-                    <a href="#" class="primary-btn view-card">VIEW CARD</a>
-                    <a href="#" class="primary-btn checkout-btn">CHECK OUT</a>
+                    <RouterLink to="/cart" class="primary-btn view-card">VIEW CARD</RouterLink>
+                    <!-- <a href="#" class="primary-btn checkout-btn">CHECK OUT</a> -->
                   </div>
                 </div>
               </li>
@@ -79,7 +104,5 @@
     </div>
   </header>
 </template>
-
-<script setup lang="ts"></script>
 
 <style scoped></style>
