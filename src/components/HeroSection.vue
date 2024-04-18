@@ -5,7 +5,7 @@
         <div
           class="single-hero-items set-bg"
           style="width: 100%; height: 400px"
-          :style="`background-image: url('http://localhost:3000/src/assets/img/hero-${slide}.jpg');`"
+          :style="`background-image: url('${config.AppUrl}/img/hero-${slide}.jpg');`"
         >
           <div class="container" style="margin-top: 70px">
             <div class="row">
@@ -33,4 +33,5 @@
 <script setup lang="ts">
 import 'vue3-carousel/dist/carousel.css'
 import { Carousel, Slide, Navigation } from 'vue3-carousel'
+import { config } from '../config'
 </script>

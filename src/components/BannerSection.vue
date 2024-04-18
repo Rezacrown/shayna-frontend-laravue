@@ -4,7 +4,7 @@ import { Carousel, Slide, Navigation, Pagination } from 'vue3-carousel'
 
 import { onMounted, ref } from 'vue'
 import { fetching } from '../config/axios'
-import { ProductAPI } from '../types/ProductAPI'
+import type { ProductAPI } from '../types/ProductAPI'
 
 import { config } from '../config/index'
 

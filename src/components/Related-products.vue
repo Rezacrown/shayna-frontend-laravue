@@ -2,7 +2,7 @@
 import { RouterLink, useRoute } from 'vue-router'
 
 import { fetching } from '../config/axios'
-import { ProductAPIResponseByID, ProductAPI } from '../types/ProductAPI'
+import type { ProductAPI } from '../types/ProductAPI'
 
 import { onMounted, ref } from 'vue'
 import { config } from '../config'

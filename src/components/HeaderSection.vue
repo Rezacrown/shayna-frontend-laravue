@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ProductAPI } from '../types/ProductAPI'
+import type { ProductAPI } from '../types/ProductAPI'
 
 import { config } from '../config'
 import { onMounted, ref } from 'vue'

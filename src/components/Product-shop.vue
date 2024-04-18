@@ -7,7 +7,7 @@ import { onMounted, ref } from 'vue'
 
 import { config } from '../config'
 import { fetching } from '../config/axios'
-import { ProductAPIResponseByID, ProductAPI } from '../types/ProductAPI'
+import type { ProductAPIResponseByID, ProductAPI } from '../types/ProductAPI'
 
 const router = useRoute()
 
